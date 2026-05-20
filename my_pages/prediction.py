@@ -116,6 +116,7 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
+import joblib
 from utils.model_loader import load_model
 
 def show():
@@ -125,19 +126,15 @@ def show():
     # ---------- LOAD MODEL ----------
     model = load_model()
 
-    # ---------- LOAD DATA (ONLY FOR FEATURE NAMES) ----------
-    df = pd.read_csv("data/WA_Fn-UseC_-Telco-Customer-Churn.csv")
+    # ---------- FEATURE MATRIX COLUMNS (from training schema) ----------
+    # Avoid loading the CSV at runtime; just use the trained feature schema.
+    X_columns = joblib.load("model_columns.pkl")
 
-    df.drop("customerID", axis=1, inplace=True)
-    df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors="coerce")
-    df.dropna(inplace=True)
-    df["Churn"] = df["Churn"].map({"Yes": 1, "No": 0})
-    df = pd.get_dummies(df, drop_first=True)
-
-    X = df.drop("Churn", axis=1)
 
     # ---------- INPUT ----------
+
     st.markdown("### 🧾 Enter Customer Details")
+
 
     col1, col2 = st.columns(2)
 
@@ -151,8 +148,10 @@ def show():
     # ---------- PREDICTION ----------
     if st.button("🚀 Predict"):
 
-        # Create empty input
-        input_data = pd.DataFrame([np.zeros(len(X.columns))], columns=X.columns)
+        # Create empty input (match trained feature schema)
+        input_data = pd.DataFrame([np.zeros(len(X_columns))], columns=X_columns)
+
+
 
         # Fill values
         input_data["tenure"] = tenure
@@ -218,9 +217,10 @@ def show():
                 importance = model.feature_importances_
 
                 feat_df = pd.DataFrame({
-                    "Feature": X.columns,
+                    "Feature": X_columns,
                     "Importance": importance
                 }).sort_values(by="Importance", ascending=False).head(5)
+
 
                 fig2 = px.bar(
                     feat_df,

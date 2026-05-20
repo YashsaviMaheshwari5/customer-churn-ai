@@ -78,8 +78,8 @@ Welcome to the AI-powered Customer Churn Prediction System.
 
         st.divider()
 
-        username = st.text_input("👤 Username")
-        password = st.text_input("🔒 Password", type="password")
+        username = st.text_input("👤 Username", key="login_username")
+        password = st.text_input("🔒 Password", type="password", key="login_password")
 
         if st.button("🚀 Login", use_container_width=True):
 

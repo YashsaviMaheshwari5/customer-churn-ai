@@ -1,5 +1,5 @@
 import streamlit as st
-from database import add_user, login_user
+from .database import add_user, login_user
 
 st.set_page_config(page_title="Login", layout="wide")
 
@@ -81,7 +81,7 @@ with col2:
     st.markdown("<h2>🔐 Login</h2>", unsafe_allow_html=True)
 
     menu = ["Login", "Register"]
-    choice = st.radio("", menu, horizontal=True)
+    choice = st.radio("Login Mode", menu, horizontal=True, label_visibility="collapsed")
 
     # LOGIN
     if choice == "Login":
